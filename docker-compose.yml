@@ -1,0 +1,33 @@
+version: '3.8'
+
+networks:
+  shop-app:
+
+services:
+
+  nginx-service:
+    image: nginx:stable-alpine
+    container_name: nginx-container-app
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/project
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-service
+    networks:
+      - shop-app
+
+  php-service:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: php-container-app
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/var/www/project
+    networks:
+      - shop-app

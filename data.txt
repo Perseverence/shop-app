@@ -1,0 +1,23 @@
+Products (id, name, price, available_quantity)
+1 Phone 250.00 4
+2 Tablet 200.00 5
+3 TV 350.00 3
+4 Watch 100.00 5
+
+Actions (actions, quantity, product_id)
+add 3 1
+add 4 2
+add 1 4
+remove 2 2
+add 2 3
+remove 2 4
+add 2 1
+
+Discounts (min_price, percent)
+1000 5
+2000 10
+3000 15
+4000 20
+
+
+
