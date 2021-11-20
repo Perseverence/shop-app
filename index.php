@@ -16,7 +16,7 @@ use App\Cart;
 
 class App
 {
-    const FILE_NAME = 'data';
+    const FILE_NAME = 'data.txt';
 
     /**
      * @var array
@@ -112,8 +112,8 @@ class App
      */
     private function getFileContent(): bool|string
     {
-        if (self::FILE_NAME && file_exists(self::FILE_NAME . '.txt')) {
-            return file_get_contents(__DIR__ . '/' . self::FILE_NAME . '.txt');
+        if (self::FILE_NAME && file_exists(self::FILE_NAME)) {
+            return file_get_contents(__DIR__ . '/' . self::FILE_NAME);
         } else {
             return false;
         }
