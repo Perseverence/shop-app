@@ -38,38 +38,78 @@ class App
      */
     private array $discounts = [];
 
-    public function __construct(private Cart $cart)
+    /**
+     * @var Cart
+     */
+    private Cart $cart;
+
+    public function __construct()
     {
+        $this->cart = new Cart();
+
         $this->parseContent();
     }
 
-    private function parseContent()
+    private function parseContent(): void
     {
         $content = $this->getFileContent();
 
         if ($content) {
-            $content = preg_split('/\n/', $content, -1, PREG_SPLIT_NO_EMPTY);
+            $content = preg_split('/\n/', $content, -1);
 
-            $arrayKeys = [];
-            $position = '';
+            $identifiers = ['products', 'actions', 'discounts'];
 
-            foreach ($content as $row) {
-                if(str_contains($row, 'Products')) {
-                    $position = 'products';
-                    $arrayKeys = explode(',', str_replace(array('Products', '(', ')', ' '), '', $row));
-                } else if(str_contains($row, 'Actions')) {
-                    $position = 'actions';
-                    $arrayKeys = explode(',', str_replace(array('Actions', '(', ')', ' '), '', $row));
-                } else if(str_contains($row, 'Discounts')) {
-                    $position = 'discounts';
-                    $arrayKeys = explode(',', str_replace(array('Discounts', '(', ')', ' '), '', $row));
-                } else {
-                    $this->{$position}[] = array_combine($arrayKeys, explode(' ', $row));
+            foreach ($identifiers as $identifier) {
+
+                $keys = [];
+
+                foreach ($content as $key => $row) {
+                    if(str_contains($row, ucfirst($identifier))) {
+                        $keys = $this->obtainColumns(ucfirst($identifier), $row);
+                        unset($content[$key]);
+                        continue;
+                    }
+
+                    if (empty($row)) {
+                        unset($content[$key]);
+                        break;
+                    }
+
+                    $this->{$identifier}[] = array_combine($keys, explode(' ', $row));
+                    unset($content[$key]);
                 }
             }
+
+//            foreach ($content as $row) {
+//                if(str_contains($row, 'Products')) {
+//                    $position = 'products';
+//                    $arrayKeys = explode(',', str_replace(array('Products', '(', ')', ' '), '', $row));
+//                } else if(str_contains($row, 'Actions')) {
+//                    $position = 'actions';
+//                    $arrayKeys = explode(',', str_replace(array('Actions', '(', ')', ' '), '', $row));
+//                } else if(str_contains($row, 'Discounts')) {
+//                    $position = 'discounts';
+//                    $arrayKeys = explode(',', str_replace(array('Discounts', '(', ')', ' '), '', $row));
+//                } else {
+//                    $this->{$position}[] = array_combine($arrayKeys, explode(' ', $row));
+//                }
+//            }
         }
     }
 
+    /**
+     * @param $identifier
+     * @param $row
+     * @return array
+     */
+    private function obtainColumns($identifier, $row): array
+    {
+        return explode(',', str_replace(array($identifier, '(', ')', ' '), '', $row));
+    }
+
+    /**
+     * @return bool|string
+     */
     private function getFileContent(): bool|string
     {
         if (self::FILE_NAME && file_exists(self::FILE_NAME . '.txt')) {
@@ -93,8 +133,8 @@ class App
         if (count($this->actions) > 0) {
             foreach ($this->actions as $action) {
                 if (method_exists($this->cart, $action['action']) && is_callable(array($this->cart, $action['action']))) {
-                    echo 'Method called ' . $action['action'] . PHP_EOL;
-                    call_user_func_array([$this->cart, $action['action']], [(int) $action['quantity'], new CartItem($this->productsObjects[(int) $action['product_id']])]);
+                    //echo 'Method called ' . $action['action'] . PHP_EOL;
+                    call_user_func_array([$this->cart, $action['action']], [(int) $action['quantity'], $this->productsObjects[(int) $action['product_id']]]);
                 }
             }
         }
@@ -104,26 +144,20 @@ class App
     {
         if (!empty($this->cart->getProducts())) {
             foreach ($this->cart->getProducts() as $item) {
-                echo 'Product name: ' . $item['name'] . ' quantity: (' . $item['quantity'] . ') Price: ' . $item['price'] . ' Total price: ' . $item['totalPrice'] . PHP_EOL;
+                echo 'Product name: ' . $item->product->getName() . ' quantity: (' . $item->quantity . ') Price: ' . $item->product->getPrice() . ' Total price: ' . $item->calculatePrice() . PHP_EOL;
             }
 
             echo PHP_EOL . 'Total number of products in the cart: ' . $this->cart->getTotalCart() . PHP_EOL;
-            echo 'Discount: ' . $this->cart->getDiscount($this->discounts) . PHP_EOL;
+            echo 'Discount: ' . $this->cart->getDiscount($this->discounts) . '%' . PHP_EOL;
             echo 'Total price: ' . $this->cart->getTotalAmount() . PHP_EOL;
         }
     }
 }
 
-$app = new App(new Cart());
+$app = new App();
 $app->createProductsObjects();
 $app->simulateActions();
 $app->getCartInfo();
-
-die;
-
-
-
-
 
 
 

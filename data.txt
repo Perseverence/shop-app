@@ -3,6 +3,7 @@ Products (id, name, price, available_quantity)
 2 Tablet 200.00 5
 3 TV 350.00 3
 4 Watch 100.00 5
+5 Mouse 10.00 3
 
 Actions (action, quantity, product_id)
 add 3 1
@@ -12,6 +13,7 @@ remove 2 2
 add 2 3
 remove 2 4
 add 2 1
+add 1 5
 
 Discounts (min_price, percent)
 1000 5
