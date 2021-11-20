@@ -79,7 +79,7 @@ class App
         }
     }
 
-    public function createProductsObjects()
+    public function createProductsObjects(): void
     {
         if (count($this->products) > 0) {
             foreach ($this->products as $product) {
@@ -88,7 +88,7 @@ class App
         }
     }
 
-    public function simulateActions()
+    public function simulateActions(): void
     {
         if (count($this->actions) > 0) {
             foreach ($this->actions as $action) {
@@ -100,7 +100,7 @@ class App
         }
     }
 
-    public function getCartInfo()
+    public function getCartInfo(): void
     {
         if (!empty($this->cart->getProducts())) {
             foreach ($this->cart->getProducts() as $item) {
@@ -108,7 +108,7 @@ class App
             }
 
             echo PHP_EOL . 'Total number of products in the cart: ' . $this->cart->getTotalCart() . PHP_EOL;
-            echo 'Discount: ' . $this->cart->getDiscount() . PHP_EOL;
+            echo 'Discount: ' . $this->cart->getDiscount($this->discounts) . PHP_EOL;
             echo 'Total price: ' . $this->cart->getTotalAmount() . PHP_EOL;
         }
     }

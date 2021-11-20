@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App;
 
-use JetBrains\PhpStorm\Pure;
-
 class Cart
 {
     private array $products = [];
@@ -80,22 +78,21 @@ class Cart
         $this->totalAmount = $amount;
     }
 
-    #[Pure]
-    public function getDiscount(): float
+    public function getDiscount($discounts): float
     {
-        return $this->totalAmount - ($this->totalAmount * ($this->calculateDiscount() / 100));
+        return $this->totalAmount - ($this->totalAmount * ($this->calculateDiscount($discounts) / 100));
     }
 
-    public function calculateDiscount(): int
+    public function calculateDiscount($discounts): int
     {
-        if ($this->totalAmount <= 1000) {
-            return 5;
-        } else if ($this->totalAmount <= 2000) {
-            return 10;
-        } else if ($this->totalAmount <= 3000) {
-            return 15;
-        } else {
-            return 40;
+        $percent = 0;
+
+        foreach ($discounts as $discount) {
+            if ($this->totalAmount <= $discount['min_price']) {
+                $percent = $discount['percent'];
+            }
         }
+
+        return (int) $percent;
     }
 }
