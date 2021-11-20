@@ -6,6 +6,8 @@ namespace App;
 
 class CartItem
 {
+    public int $quantity = 0;
+
     public function __construct(public Product $product)
     {
     }
