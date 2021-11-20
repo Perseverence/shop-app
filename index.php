@@ -11,7 +11,6 @@ require_once __DIR__ . '\CartItem.php';
 require_once __DIR__ . '\Cart.php';
 
 use App\Product;
-use App\CartItem;
 use App\Cart;
 
 class App
@@ -64,6 +63,7 @@ class App
                 $keys = [];
 
                 foreach ($content as $key => $row) {
+                    // str contains php 8 se putea face si cu str_pos
                     if(str_contains($row, ucfirst($identifier))) {
                         $keys = $this->obtainColumns(ucfirst($identifier), $row);
                         unset($content[$key]);
